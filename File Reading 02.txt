@@ -1,0 +1,530 @@
+Name: Yasas Weerasinghe
+
+
+---------------------------------------------------------------------------------------------------------
+
+** Airport**
+
+
+package Airport;
+
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+
+public class Airport {
+	static Passenger[] passenger = new Passenger[30];
+	public static void main(String[] args) throws FileNotFoundException{
+	PassengerQueue queue = new PassengerQueue(20);
+
+	String menu = null;
+	
+	initialise(passenger);
+	
+	do{
+		System.out.println("      * WELCOME TO AIRPORT PROGRAM COURSE WORK *     ");
+                System.out.println("========================================================");
+                System.out.println(">> Menu options << (Enter the letters to proceed)");
+                System.out.println("------------------");
+		System.out.println("A - Add passengers to the boarding queue");
+		System.out.println("V - View the passengers queue");
+		System.out.println("D - Delete the passengers from queue");
+		System.out.println("S - Store program data in to a file");
+		System.out.println("L - Load program data from the file");
+		System.out.println("R - Run the simulation ditails");
+		System.out.println("X - Exit from the application");
+                System.out.println("-------------------------------------------------------");
+		System.out.print("Enter the process: ");
+                Scanner sc = new Scanner(System.in);
+		menu = sc.next().toUpperCase();
+                System.out.println("--------------------------------------");
+                System.out.println("");
+                
+		
+		switch(menu){
+		case "A" :{
+			queue.addPassenger();
+			break;
+		}
+		case "D" :{
+			queue.deletePassenger();
+			break;
+		}
+		case "V" :{
+			queue.viewPassenger();
+			break;
+		}
+		case "S" :{
+			queue.storePassenger();
+			break;
+		}
+		case "L" :{
+			queue.loadProgrammeData();
+			break;
+		}
+		case "R" :{
+			File input_datFile = new File("passengers.dat");
+
+			try {
+				Scanner infile = new Scanner(input_datFile);
+				int x=0;
+
+				while(x<30){	
+					passenger[x].setfName(infile.next());	
+					passenger[x].setlName(infile.next());
+					x++;	
+				}
+
+				infile.close();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+
+			queue.simulateQueue();
+			
+			break;
+		}
+		case "X" :{
+			System.out.println("Exit");
+			System.exit(0);
+		}
+		}
+		
+	}while(menu != "X");
+	
+	
+	}
+
+	
+	private static void initialise(Passenger[] passenger) {
+		for(int x=0; x<30;x++){
+			passenger[x]=new Passenger();
+			passenger[x].setfName("null");
+			
+		}		
+	}
+
+	
+}
+
+------------------------------------------------------------------------------------------------------------------------------
+
+
+** Passenger**
+
+
+
+package Airport;
+
+public class Passenger {
+	private String fName; // first Name
+	private String lName; // last Name
+	private int time;
+	
+	
+
+
+
+	public void setfName(String firstName){
+		this.fName = firstName;
+	}
+	
+	public String getfName(){
+		return this.fName;
+	}
+	
+	public void setlName(String lName){
+		this.lName = lName;
+	}
+	
+	public String getlName(){
+		return this.lName;
+	}
+	
+	public void setSecondInQueue(int time){
+		this.time = time;
+	}
+	
+	public int getSecondInQueue(){
+		return this.time;
+	}
+
+}
+
+----------------------------------------------------------------------------------------------------------------------------
+
+**Passenger Queue**
+
+package Airport;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Scanner;
+
+public class PassengerQueue {
+	private int space;
+	int face = 0;
+	int end = 0;
+	int Size = 0;
+	
+	
+	static Scanner sc = new Scanner(System.in);
+
+	
+	Passenger[] passengerQueue = new Passenger[20];
+	
+	public PassengerQueue(int qSize) { //queue size
+		this.space=qSize;
+		passengerQueue = new Passenger[this.space];
+		initialize(passengerQueue);
+	}
+	
+	public void initialize(Passenger[] PassengerQueue){
+		for(int i=0;i<passengerQueue.length;i++){
+			passengerQueue[i] = new Passenger();
+			passengerQueue[i].setfName("Empty");
+			passengerQueue[i].setlName("Empty");
+                       
+		}
+	}
+	
+	
+public void addPassenger() {
+        
+        if (isQueueFull()) {
+            System.out.println("Queue is full.Can't add the passenger");
+        } else {
+            
+            if(end == space-1){
+                end = 0;
+            }
+            System.out.print("Enter the first name: ");
+            passengerQueue[end].setfName(sc.next());
+            System.out.print("Enter the last name: ");
+            passengerQueue[end].setlName(sc.next());
+            System.out.print("Enter the delay time: ");
+            passengerQueue[end].setSecondInQueue(sc.nextInt());
+            System.out.println(passengerQueue[end].getfName()+" "+passengerQueue[end].getlName()+" is added.");
+            System.out.println(passengerQueue[end].getSecondInQueue()+ " (s) delay time is added. ");
+            Size++;
+            end++;
+            System.out.println("------------------------------------");
+            System.out.println("");
+
+        }
+    }
+	
+public void deletePassenger() {
+	if (isQueueEmpty()) {
+		System.out.println("Queue is Empty.");
+                System.out.println("------------------------------------");
+                System.out.println("");
+	} else {
+		face++;
+		if(face == space-1){
+			System.out.println("This "+passengerQueue[face-1].getfName()+" "+passengerQueue[face-1].getlName()+" data is deleted.");
+			passengerQueue[face-1].setfName("Empty");
+			passengerQueue[face-1].setlName("Empty");
+			passengerQueue[face-1].setSecondInQueue(0);
+			face = 0;
+		} else {
+			if(!passengerQueue[face-1].getfName().equals("null")){
+			System.out.println("This "+passengerQueue[face-1].getfName()+" "+passengerQueue[face-1].getlName()+" data is deleted.");
+			passengerQueue[face-1].setfName("Empty");
+			passengerQueue[face-1].setlName("Empty");
+			passengerQueue[face-1].setSecondInQueue(0);
+                        System.out.println("------------------------------------");
+                        System.out.println("");
+			}
+		}
+		Size--;
+	}
+        
+}
+
+	public void storePassenger(){
+		try {
+			// store the passenger txt file
+			File passengerfile = new File("Passenger.txt");
+			PrintWriter printWriter = new PrintWriter(passengerfile);
+			// printing the all array element text file
+			for (int j = 0; j < passengerQueue.length; j++) {
+				if (passengerQueue[j].getfName() != null) {
+					// show the array element in txt file
+					printWriter.println(passengerQueue[j].getfName()+" "+passengerQueue[j].getlName()+" "+passengerQueue[j].getSecondInQueue());
+					
+				} else {
+					printWriter.println(passengerQueue[j].getfName());
+				}
+			}
+			System.out.println("Succesfully stored");
+			printWriter.close();
+		} catch (IOException e) {
+			System.out.println("Check the file.");
+                        System.out.println("------------------------------------");
+                        System.out.println("");
+		}
+	}
+	
+	
+	
+	public void viewPassenger(){
+		if(isQueueEmpty()){
+			System.out.println("Empty Queue!");
+		}else{
+			for(int i = 0;i<passengerQueue.length; i++){
+				System.out.println(passengerQueue[i].getfName()+" "+passengerQueue[i].getlName()+ "Time "+passengerQueue[i].getSecondInQueue());
+				System.out.println("------------------------------------");
+                                System.out.println("");			}
+		}
+	}
+	
+	public void loadProgrammeData() {
+		Scanner scanning = null;
+		try {
+			// load the passenger txt file
+			File passengerfile = new File("Passenger.txt");
+			scanning = new Scanner(passengerfile);
+			int i = 1;
+			// read the all line in the txt file
+			while (scanning.hasNext()) {
+				// fill the array with passenger name
+			
+					passengerQueue[i].setfName(scanning.next());
+					passengerQueue[i].setlName(scanning.next());
+					passengerQueue[i].setSecondInQueue(scanning.nextInt());
+					System.out.println("Name: " + passengerQueue[i].getfName()+" "+passengerQueue[i].getlName()+" "+ "Delay time: " + passengerQueue[i].getSecondInQueue());
+
+				i=(i+1)%20;
+				
+			}
+			System.out.println("Succesfully loaded");
+		} catch (IOException e) {
+			System.out.println("Check your file.");
+		} finally {
+			scanning.close();
+                        System.out.println("------------------------------------");
+                        System.out.println("");
+		}
+	}
+	
+	
+	
+	boolean isQueueFull(){
+		boolean status = false;
+		if (Size == 20){
+			status = true;            
+		}
+		return status;
+	}
+
+	boolean isQueueEmpty(){
+		boolean status = false;
+		if (Size == 0){
+			status = true;
+		}
+		return status;
+	}
+
+	public void simulateQueue() throws FileNotFoundException {
+		initialize(passengerQueue);//to remove before entry to the queue
+
+		end=0;
+		face=0;
+		int place =0;
+		int timeLate=0;
+		int count=0;
+		int indicator=0;
+		int noOfL=0;
+		int wholeTime=0;
+		int nullQueue=0;
+		int nullList= 0;
+		int late = 0;
+		int minLate = 0;
+		int maxLate = 0;
+		int a = 0;
+		int k = 0;
+
+
+		File report = new File("report.dat");
+
+		PrintWriter output = new PrintWriter(report);
+
+
+
+do{
+
+			
+			for(int x=0 ; x<passengerQueue.length ;x++){
+
+				if((passengerQueue[x].getfName().equalsIgnoreCase("null"))){
+
+					nullQueue++;	
+				}	
+			}
+			
+		
+			noOfL=Cal();
+
+			if(nullQueue>0){
+
+			
+
+				if(noOfL<nullQueue){
+					
+					for (int x=0;x<noOfL;x++){
+						
+						if(place>=30){
+							place=0;
+							break;
+							
+						}
+						late = nCal(3);
+						timeLate=timeLate+late;
+
+						wholeTime=wholeTime+timeLate;
+
+						
+						passengerQueue[end].setfName(Airport.passenger[place].getfName());
+						passengerQueue[end].setlName(Airport.passenger[place].getlName());
+						passengerQueue[end].setSecondInQueue(timeLate);
+
+						
+						Airport.passenger[place].setfName("null");
+						
+
+
+						minLate = Math.min(timeLate,late);
+						maxLate = Math.max(timeLate,late);
+						
+						end=(end+1)%20;
+						place++;
+					}
+				}
+			}
+			
+			
+			
+
+
+
+			for(int x=0;x<noOfL;x++){
+
+				if(!(passengerQueue[indicator].getfName().equalsIgnoreCase("null")) && count<30 ){
+					
+
+					System.out.print(passengerQueue[indicator].getfName()+" "+passengerQueue[indicator].getlName()+" \n Time "+passengerQueue[indicator].getSecondInQueue()+"\n");
+					output.print(passengerQueue[indicator].getfName()+" "+passengerQueue[indicator].getlName()+" \n Time "+passengerQueue[indicator].getSecondInQueue()+"\n");
+                                        
+
+					count++;
+
+					indicator=(indicator+1)%20;
+				}
+
+
+			}
+
+			
+			
+		
+			
+			
+			
+
+			passengerQueue[face].setfName("null");
+			passengerQueue[face].setlName("");
+			passengerQueue[face].setSecondInQueue(0);
+			
+			face=(face+1)%20;
+
+
+			if(nullQueue==0){
+
+				System.out.println("Queue is full");
+                                System.out.println("------------------------------------");
+                                System.out.println("");
+
+			}
+
+			nullList = 0;
+
+			for(int x=0 ; x<30 ;x++){
+
+				if((Airport.passenger[x].getfName().equalsIgnoreCase("null"))){
+
+					nullList++;	
+				}	
+			}
+			
+			
+
+
+		}while(nullList!=30);
+		
+	
+		
+		a=0;
+		for(int i=0;i<20;i++){
+			if(!(passengerQueue[i].getfName().equals("null"))){
+				
+				a++;
+				
+			}
+		}
+		System.out.println("Mximum length of the queue :"+a);
+		output.print("\n Minimum Delay "+minLate+" seconds. \n Maximum Delay "+maxLate+" seconds. \n Average Delay "+timeLate/30+" seconds.\n Total Delay "+timeLate+" seconds. \n Maximum length of the Queue :"+k);
+		output.close();
+		
+		
+		System.out.println("Minimum delay time of a passenger :"+minLate+" (s)");
+		System.out.println("Maximum delay time of a passenger :"+maxLate+" (s)");
+                
+                
+		end=0;
+		face=0;
+		
+		
+	}
+	
+	public static int Cal() {
+        return (int) (1 + 6 * Math.random());
+	}
+
+
+	public static int nCal(int n) {
+    int sum = 0;
+    for (int i = 0; i < n; i++) {
+        sum = sum + Cal(); 
+    }
+    return sum;
+	}
+
+	
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
